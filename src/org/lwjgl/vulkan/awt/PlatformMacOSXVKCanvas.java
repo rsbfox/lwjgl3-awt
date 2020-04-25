@@ -2,7 +2,6 @@ package org.lwjgl.vulkan.awt;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.system.jawt.JAWT;
 import org.lwjgl.system.jawt.JAWTDrawingSurface;
 import org.lwjgl.system.jawt.JAWTDrawingSurfaceInfo;
@@ -13,6 +12,7 @@ import org.lwjgl.vulkan.VkPhysicalDevice;
 import java.awt.*;
 import java.nio.LongBuffer;
 
+import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.jawt.JAWTFunctions.*;
 import static org.lwjgl.vulkan.EXTMetalSurface.VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
 import static org.lwjgl.vulkan.EXTMetalSurface.vkCreateMetalSurfaceEXT;
@@ -48,9 +48,11 @@ public class PlatformMacOSXVKCanvas implements PlatformVKCanvas {
                             .sType(VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT)
                             .flags(0)
                             .pLayer(pPlayer);
-                    long[] surfaceAddr = new long[] { stack.nmalloc(8, 8) };
+                    LongBuffer surfaceAddr = memAllocLong(1);
+                    surfaceAddr.put(stack.nmalloc(8, 8));
+                    surfaceAddr.rewind();
                     int err = vkCreateMetalSurfaceEXT(data.instance, sci, null, surfaceAddr);
-                    long surface = MemoryUtil.memGetLong(surfaceAddr[0]);
+                    long surface = surfaceAddr.get(0);
                     stack.setPointer(ptr);
                     if (err != VK_SUCCESS) {
                         throw new AWTException("Calling vkCreateMetalSurfaceEXT failed with error: " + err);
