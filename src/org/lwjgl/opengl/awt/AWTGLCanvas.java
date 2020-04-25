@@ -1,9 +1,10 @@
 package org.lwjgl.opengl.awt;
 
-import java.awt.AWTException;
-import java.awt.Canvas;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.*;
 
 import org.lwjgl.awthacks.NonClearGraphics;
@@ -25,6 +26,8 @@ public abstract class AWTGLCanvas extends Canvas {
             return new PlatformWin32GLCanvas();
         case LINUX:
             return new PlatformLinuxGLCanvas();
+        case MACOSX:
+            return new PlatformMacOSXGLCanvas();
         default:
             throw new UnsupportedOperationException("Platform " + Platform.get() + " not yet supported");
         }
@@ -34,6 +37,18 @@ public abstract class AWTGLCanvas extends Canvas {
     protected final GLData data;
     protected final GLData effective = new GLData();
     protected boolean initCalled;
+    private boolean resized = false;
+    private Instant lastResized = Instant.MAX;
+
+    // hack >.>
+    @Override
+    public int getHeight() {
+        if (Platform.get() == Platform.MACOSX) {
+            return -super.getHeight();
+        } else {
+            return super.getHeight();
+        }
+    }
 
     @Override
     public void removeNotify() {
@@ -46,6 +61,15 @@ public abstract class AWTGLCanvas extends Canvas {
     }
     protected AWTGLCanvas(GLData data) {
         this.data = data;
+        if (Platform.get() == Platform.MACOSX) {
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    resized = true;
+                    lastResized = Instant.now();
+                }
+            });
+        }
     }
 
     protected AWTGLCanvas() {
@@ -53,6 +77,14 @@ public abstract class AWTGLCanvas extends Canvas {
     }
 
     protected void beforeRender() {
+        if (resized && ChronoUnit.SECONDS.between(lastResized, Instant.now()) > 1) {
+            if (context != 0L) {
+                platformCanvas.deleteContext(context);
+                initCalled = false;
+                context = 0L;
+                resized = false;
+            }
+        }
         if (context == 0L) {
             try {
                 context = platformCanvas.create(this, data, effective);
