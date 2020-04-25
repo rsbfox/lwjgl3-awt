@@ -3,6 +3,7 @@ package org.lwjgl.vulkan.awt;
 import java.awt.AWTException;
 import java.awt.Canvas;
 import java.awt.Graphics;
+import java.io.IOException;
 
 import org.lwjgl.system.Platform;
 import org.lwjgl.vulkan.VkPhysicalDevice;
@@ -23,6 +24,9 @@ public abstract class AWTVKCanvas extends Canvas {
             break;
         case LINUX:
             platformClassName = "org.lwjgl.vulkan.awt.PlatformX11VKCanvas";
+            break;
+        case MACOSX:
+            platformClassName = "org.lwjgl.vulkan.awt.PlatformMacOSXVKCanvas";
             break;
         default:
             throw new AssertionError("NYI");

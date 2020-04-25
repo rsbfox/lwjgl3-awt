@@ -23,7 +23,7 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
         awt.version(JAWT_VERSION_1_7);
         if (!JAWT_GetAWT(awt))
             throw new AssertionError("GetAWT failed");
-        System.loadLibrary("AwtGLCanvas");
+        System.loadLibrary("lwjgl3awt");
         objc_msgSend = ObjCRuntime.getLibrary().getFunctionAddress("objc_msgSend");
     }
 
@@ -31,6 +31,7 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
     private long view;
     private long context;
 
+    private native long createView(long platformInfo);
 
     @Override
     public long create(Canvas canvas, GLData attribs, GLData effective) throws AWTException {
@@ -62,8 +63,6 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
             JAWT_FreeDrawingSurface(ds, awt.FreeDrawingSurface());
         }
     }
-
-    private native long createView(long platformInfo);
 
     @Override
     public boolean swapBuffers() {
