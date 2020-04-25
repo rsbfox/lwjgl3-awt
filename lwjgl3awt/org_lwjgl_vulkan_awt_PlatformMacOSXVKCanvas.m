@@ -10,7 +10,7 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_vulkan_awt_PlatformMacOSXVKCanvas_createM
       id<JAWT_SurfaceLayers> surfaceLayers = (id)platformInfo;
       id<MTLDevice> device = MTLCreateSystemDefaultDevice();
       MTKView *view = [[MTKView alloc] initWithFrame:surfaceLayers.windowLayer.frame device:device];
-      //[view.layer setNeedsDisplayOnBoundsChange:YES];
+      [view.layer setNeedsDisplayOnBoundsChange:YES];
       surfaceLayers.layer = view.layer;
       return (jlong) view.layer;
   }
