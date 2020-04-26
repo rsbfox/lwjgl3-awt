@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.*;
 
 import org.lwjgl.awthacks.NonClearGraphics;
@@ -38,9 +37,9 @@ public abstract class AWTGLCanvas extends Canvas {
     protected final GLData effective = new GLData();
     protected boolean initCalled;
     private boolean resized = false;
-    private Instant lastResized = Instant.MAX;
+    private Instant lastResized = null;
 
-    // hack >.>
+    // todo: fix in better way
     @Override
     public int getHeight() {
         if (Platform.get() == Platform.MACOSX) {
@@ -77,7 +76,8 @@ public abstract class AWTGLCanvas extends Canvas {
     }
 
     protected void beforeRender() {
-        if (resized && ChronoUnit.SECONDS.between(lastResized, Instant.now()) > 1) {
+        // TODO: figure out if NSOpenGLView can be resized
+        if (resized && lastResized.plusSeconds(1).isBefore(Instant.now())) {
             if (context != 0L) {
                 platformCanvas.deleteContext(context);
                 initCalled = false;

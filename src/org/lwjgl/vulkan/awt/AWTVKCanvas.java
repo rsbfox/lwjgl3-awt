@@ -3,7 +3,6 @@ package org.lwjgl.vulkan.awt;
 import java.awt.AWTException;
 import java.awt.Canvas;
 import java.awt.Graphics;
-import java.io.IOException;
 
 import org.lwjgl.system.Platform;
 import org.lwjgl.vulkan.VkPhysicalDevice;
@@ -65,6 +64,9 @@ public abstract class AWTVKCanvas extends Canvas {
         if (created)
             initVK();
         paintVK();
+        if (platformCanvas instanceof PlatformMacOSXVKCanvas) {
+            PlatformMacOSXVKCanvas.caFlush();
+        }
     }
 
     /**
