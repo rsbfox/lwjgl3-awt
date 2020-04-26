@@ -7,10 +7,10 @@ import org.lwjgl.system.macosx.ObjCRuntime;
 
 import java.awt.*;
 
-import static org.lwjgl.opengl.CGL.*;
-import static org.lwjgl.opengl.GL11.glFinish;
+import static org.lwjgl.opengl.CGL.CGLGetCurrentContext;
+import static org.lwjgl.opengl.CGL.CGLSetCurrentContext;
 import static org.lwjgl.opengl.GL11.glFlush;
-import static org.lwjgl.system.JNI.*;
+import static org.lwjgl.system.JNI.invokePPP;
 import static org.lwjgl.system.jawt.JAWTFunctions.*;
 import static org.lwjgl.system.macosx.ObjCRuntime.objc_getClass;
 import static org.lwjgl.system.macosx.ObjCRuntime.sel_getUid;
