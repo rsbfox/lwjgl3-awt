@@ -64,6 +64,7 @@ public abstract class AWTVKCanvas extends Canvas {
         if (created)
             initVK();
         paintVK();
+        // todo: investigate how to trigger display of metal backing layer from vulkan
         if (platformCanvas instanceof PlatformMacOSXVKCanvas) {
             PlatformMacOSXVKCanvas.caFlush();
         }
