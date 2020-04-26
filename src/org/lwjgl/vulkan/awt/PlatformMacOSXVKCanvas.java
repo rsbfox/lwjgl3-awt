@@ -5,7 +5,6 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.jawt.JAWT;
 import org.lwjgl.system.jawt.JAWTDrawingSurface;
 import org.lwjgl.system.jawt.JAWTDrawingSurfaceInfo;
-
 import org.lwjgl.system.macosx.ObjCRuntime;
 import org.lwjgl.vulkan.VkMetalSurfaceCreateInfoEXT;
 import org.lwjgl.vulkan.VkPhysicalDevice;
@@ -13,8 +12,11 @@ import org.lwjgl.vulkan.VkPhysicalDevice;
 import java.awt.*;
 import java.nio.LongBuffer;
 
+import static org.lwjgl.system.JNI.invokePPP;
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.jawt.JAWTFunctions.*;
+import static org.lwjgl.system.macosx.ObjCRuntime.objc_getClass;
+import static org.lwjgl.system.macosx.ObjCRuntime.sel_getUid;
 import static org.lwjgl.vulkan.EXTMetalSurface.VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
 import static org.lwjgl.vulkan.EXTMetalSurface.vkCreateMetalSurfaceEXT;
 import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
@@ -22,12 +24,21 @@ import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
 public class PlatformMacOSXVKCanvas implements PlatformVKCanvas {
 
     private static final JAWT awt;
+    private static final long objc_msgSend;
+    private static final long CATransaction;
     static {
         awt = JAWT.calloc();
         awt.version(JAWT_VERSION_1_7);
         if (!JAWT_GetAWT(awt))
             throw new AssertionError("GetAWT failed");
         System.loadLibrary("lwjgl3awt");
+        objc_msgSend = ObjCRuntime.getLibrary().getFunctionAddress("objc_msgSend");
+        CATransaction = objc_getClass("CATransaction");
+    }
+
+    // core animation flush
+    public static void caFlush() {
+        invokePPP(CATransaction, sel_getUid("flush"), objc_msgSend);
     }
 
     private native long createMTKView(long platformInfo);
@@ -70,6 +81,7 @@ public class PlatformMacOSXVKCanvas implements PlatformVKCanvas {
         }
     }
 
+    // TODO: add this
     public boolean getPhysicalDevicePresentationSupport(VkPhysicalDevice physicalDevice, int queueFamily) {
         return true;
     }

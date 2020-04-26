@@ -9,7 +9,6 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_awt_PlatformMacOSXGLCanvas_createV
      id <JAWT_SurfaceLayers> surfaceLayers = (id)platformInfo;
      NSOpenGLView *view = [[NSOpenGLView alloc] initWithFrame:surfaceLayers.windowLayer.frame pixelFormat:nil];
      [view setWantsLayer:YES];
-     [view.layer setNeedsDisplayOnBoundsChange:YES];
      surfaceLayers.layer = view.layer;
      return (jlong) view;
  }

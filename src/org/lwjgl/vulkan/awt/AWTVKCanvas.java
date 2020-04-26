@@ -1,25 +1,16 @@
 package org.lwjgl.vulkan.awt;
 
-import java.awt.AWTException;
-import java.awt.Canvas;
-import java.awt.Graphics;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.Platform;
+import org.lwjgl.vulkan.*;
+
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.time.Instant;
 
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.system.Platform;
-import org.lwjgl.system.macosx.ObjCRuntime;
-import org.lwjgl.vulkan.*;
-
-import static org.lwjgl.system.JNI.invokePPP;
-import static org.lwjgl.system.MemoryUtil.*;
-import static org.lwjgl.system.MemoryUtil.memAllocLong;
-import static org.lwjgl.system.macosx.ObjCRuntime.objc_getClass;
-import static org.lwjgl.system.macosx.ObjCRuntime.sel_getUid;
 import static org.lwjgl.vulkan.VK10.*;
 import static org.lwjgl.vulkan.awt.SimpleDemo.*;
 import static org.lwjgl.vulkan.awt.VKUtil.VK_FLAGS_NONE;
@@ -202,10 +193,8 @@ public abstract class AWTVKCanvas extends Canvas {
             }
         }
         paintVK();
-        if (Platform.get() == Platform.MACOSX) {
-            long objc_msgSend = ObjCRuntime.getLibrary().getFunctionAddress("objc_msgSend");
-            long CATransaction = objc_getClass("CATransaction");
-            invokePPP(CATransaction, sel_getUid("flush"), objc_msgSend);
+        if (platformCanvas instanceof PlatformMacOSXVKCanvas) {
+            PlatformMacOSXVKCanvas.caFlush();
         }
     }
 
