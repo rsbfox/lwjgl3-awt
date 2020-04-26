@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_lwjgl_opengl_awt_PlatformMacOSXGLCanvas
  * Method:    createView
- * Signature: (J)J
+ * Signature: (JII)J
  */
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_awt_PlatformMacOSXGLCanvas_createView
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jobject, jlong, jint, jint);
 
 #ifdef __cplusplus
 }

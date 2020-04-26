@@ -6,11 +6,11 @@
 
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_vulkan_awt_PlatformMacOSXVKCanvas_createMTKView
-  (JNIEnv *env, jobject object, jlong platformInfo) {
+  (JNIEnv *env, jobject object, jlong platformInfo, jint width, jint height) {
       id<JAWT_SurfaceLayers> surfaceLayers = (id)platformInfo;
       id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-      MTKView *view = [[MTKView alloc] initWithFrame:surfaceLayers.windowLayer.frame device:device];
+      CGRect frame = CGRectMake(0, surfaceLayers.windowLayer.frame.size.height-height, width, height);
+      MTKView *view = [[MTKView alloc] initWithFrame:frame device:device];
       surfaceLayers.layer = view.layer;
       return (jlong) view.layer;
   }
-

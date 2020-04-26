@@ -1,14 +1,14 @@
 package org.lwjgl.opengl.awt;
 
+import org.lwjgl.awthacks.NonClearGraphics;
+import org.lwjgl.awthacks.NonClearGraphics2D;
+import org.lwjgl.system.Platform;
+
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.time.Instant;
-import java.util.concurrent.*;
-
-import org.lwjgl.awthacks.NonClearGraphics;
-import org.lwjgl.awthacks.NonClearGraphics2D;
-import org.lwjgl.system.Platform;
+import java.util.concurrent.Callable;
 
 /**
  * An AWT {@link Canvas} that supports to be drawn on using OpenGL.
@@ -77,6 +77,8 @@ public abstract class AWTGLCanvas extends Canvas {
 
     protected void beforeRender() {
         // TODO: figure out if NSOpenGLView can be resized
+        // causing visual bugs disabled for now
+        /*
         if (resized && lastResized.plusSeconds(1).isBefore(Instant.now())) {
             if (context != 0L) {
                 platformCanvas.deleteContext(context);
@@ -85,6 +87,7 @@ public abstract class AWTGLCanvas extends Canvas {
                 resized = false;
             }
         }
+        */
         if (context == 0L) {
             try {
                 context = platformCanvas.create(this, data, effective);

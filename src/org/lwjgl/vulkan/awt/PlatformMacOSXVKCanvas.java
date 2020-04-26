@@ -5,7 +5,6 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.jawt.JAWT;
 import org.lwjgl.system.jawt.JAWTDrawingSurface;
 import org.lwjgl.system.jawt.JAWTDrawingSurfaceInfo;
-
 import org.lwjgl.system.macosx.ObjCRuntime;
 import org.lwjgl.vulkan.VkMetalSurfaceCreateInfoEXT;
 import org.lwjgl.vulkan.VkPhysicalDevice;
@@ -42,7 +41,7 @@ public class PlatformMacOSXVKCanvas implements PlatformVKCanvas {
         invokePPP(CATransaction, sel_getUid("flush"), objc_msgSend);
     }
 
-    private native long createMTKView(long platformInfo);
+    private native long createMTKView(long platformInfo, int width, int height);
 
     public long create(Canvas canvas, VKData data) throws AWTException {
         MemoryStack stack = MemoryStack.stackGet();
@@ -55,7 +54,7 @@ public class PlatformMacOSXVKCanvas implements PlatformVKCanvas {
             try {
                 JAWTDrawingSurfaceInfo dsi = JAWT_DrawingSurface_GetDrawingSurfaceInfo(ds, ds.GetDrawingSurfaceInfo());
                 try {
-                    long metalLayer = createMTKView(dsi.platformInfo());
+                    long metalLayer = createMTKView(dsi.platformInfo(), dsi.bounds().width(), dsi.bounds().height());
                     PointerBuffer pPlayer = PointerBuffer.create(metalLayer, 1);
                     VkMetalSurfaceCreateInfoEXT sci = VkMetalSurfaceCreateInfoEXT.callocStack(stack)
                             .sType(VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT)
