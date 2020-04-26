@@ -24,6 +24,9 @@ public abstract class AWTVKCanvas extends Canvas {
         case LINUX:
             platformClassName = "org.lwjgl.vulkan.awt.PlatformX11VKCanvas";
             break;
+        case MACOSX:
+            platformClassName = "org.lwjgl.vulkan.awt.PlatformMacOSXVKCanvas";
+            break;
         default:
             throw new AssertionError("NYI");
         }
@@ -61,6 +64,10 @@ public abstract class AWTVKCanvas extends Canvas {
         if (created)
             initVK();
         paintVK();
+        // todo: investigate how to trigger display of metal backing layer from vulkan
+        if (platformCanvas instanceof PlatformMacOSXVKCanvas) {
+            PlatformMacOSXVKCanvas.caFlush();
+        }
     }
 
     /**
