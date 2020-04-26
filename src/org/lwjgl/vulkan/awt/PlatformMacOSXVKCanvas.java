@@ -69,6 +69,7 @@ public class PlatformMacOSXVKCanvas implements PlatformVKCanvas {
         }
     }
 
+    // TODO: add this
     public boolean getPhysicalDevicePresentationSupport(VkPhysicalDevice physicalDevice, int queueFamily) {
         return true;
     }
