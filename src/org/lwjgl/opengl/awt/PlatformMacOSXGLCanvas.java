@@ -30,8 +30,8 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
     }
 
     public JAWTDrawingSurface ds;
-    private long context;
-    private long view;
+    private long platformInfo;
+    private long view = 0L;
 
     // core animation flush
     private static void caFlush() {
@@ -39,6 +39,14 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
     }
 
     private native long createView(long platformInfo, int width, int height);
+
+    private native void resizeView(long view, long platformInfo, int width, int height);
+
+    public void resizeView(int width, int height) {
+        if (view != 0L) {
+            resizeView(view, platformInfo, width, height);
+        }
+    }
 
     @Override
     public long create(Canvas canvas, GLData attribs, GLData effective) throws AWTException {
@@ -50,18 +58,11 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
                 throw new AWTException("JAWT_DrawingSurface_Lock() failed");
             try {
                 JAWTDrawingSurfaceInfo dsi = JAWT_DrawingSurface_GetDrawingSurfaceInfo(ds, ds.GetDrawingSurfaceInfo());
+                platformInfo = dsi.platformInfo();
                 try {
-                    // long windowLayer = invokePPP(dsi.platformInfo(), sel_getUid("windowLayer"), objc_msgSend);
-                    // http://forum.lwjgl.org/index.php?topic=6933.msg36495#msg36495
-                    // long frame = invokePPP(windowLayer, sel_getUid("frame"), objc_msgSend);
-                    // long NSOpenGLView = objc_getClass("NSOpenGLView");
-                    // long view = invokePPP(NSOpenGLView, sel_getUid("alloc"), objc_msgSend);
-                    // long pixelFormat = invokePPP(NSOpenGLView, sel_getUid("defaultPixelFormat"), objc_msgSend);
-                    // view = invokePPPPPP(view, sel_getUid("initWithFrame"), frame, sel_getUid("pixelFormat"), pixelFormat, objc_msgSend);
-                    view = createView(dsi.platformInfo(), dsi.bounds().width(), dsi.bounds().height());
+                    view = createView(platformInfo, dsi.bounds().width(), dsi.bounds().height());
                     long openGLContext = invokePPP(view, sel_getUid("openGLContext"), objc_msgSend);
-                    context = invokePPP(openGLContext, sel_getUid("CGLContextObj"), objc_msgSend);
-                    return context;
+                    return invokePPP(openGLContext, sel_getUid("CGLContextObj"), objc_msgSend);
                 } finally {
                     JAWT_DrawingSurface_FreeDrawingSurfaceInfo(dsi, ds.FreeDrawingSurfaceInfo());
                 }
@@ -75,7 +76,6 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
 
     @Override
     public boolean swapBuffers() {
-        //CGLFlushDrawable(context);
         glFlush();
         caFlush();
         return true;
@@ -89,10 +89,10 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
 
     // frees created NSOpenGLView
     private void deleteView() {
-        context = 0L;
         invokePPP(view, sel_getUid("removeFromSuperviewWithoutNeedingDisplay"), objc_msgSend);
         invokePPP(view, sel_getUid("clearGLContext"), objc_msgSend);
         invokePPP(view, sel_getUid("release"), objc_msgSend);
+        view = 0L;
     }
 
     @Override
