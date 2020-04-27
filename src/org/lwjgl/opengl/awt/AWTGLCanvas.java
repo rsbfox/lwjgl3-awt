@@ -50,12 +50,15 @@ public abstract class AWTGLCanvas extends Canvas {
     }
     protected AWTGLCanvas(GLData data) {
         this.data = data;
-        if (Platform.get() == Platform.MACOSX) {
+        if (platformCanvas instanceof PlatformMacOSXGLCanvas) {
             addComponentListener(new ComponentAdapter() {
                 @Override
                 public void componentResized(ComponentEvent e) {
-                    resized = true;
-                    lastResized = Instant.now();
+                    // view is resizing but it doesn't look correct :/
+                    ((PlatformMacOSXGLCanvas) platformCanvas).resizeView(getWidth(), getHeight());
+                    // recreating whole view works though
+                    // resized = true;
+                    // lastResized = Instant.now();
                 }
             });
         }
@@ -66,7 +69,6 @@ public abstract class AWTGLCanvas extends Canvas {
     }
 
     protected void beforeRender() {
-        // TODO: figure out if NSOpenGLView can be resized
         if (resized && lastResized.plusSeconds(1).isBefore(Instant.now())) {
             if (context != 0L) {
                 platformCanvas.deleteContext(context);

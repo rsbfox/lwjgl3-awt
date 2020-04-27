@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_awt_PlatformMacOSXGLCanvas_createView
   (JNIEnv *, jobject, jlong, jint, jint);
 
+/*
+ * Class:     org_lwjgl_opengl_awt_PlatformMacOSXGLCanvas
+ * Method:    resizeView
+ * Signature: (JJII)V
+ */
+JNIEXPORT void JNICALL Java_org_lwjgl_opengl_awt_PlatformMacOSXGLCanvas_resizeView
+  (JNIEnv *, jobject, jlong, jlong, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

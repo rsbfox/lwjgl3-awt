@@ -13,3 +13,10 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_awt_PlatformMacOSXGLCanvas_createV
      surfaceLayers.layer = view.layer;
      return (jlong) view;
  }
+
+JNIEXPORT void JNICALL Java_org_lwjgl_opengl_awt_PlatformMacOSXGLCanvas_resizeView
+ (JNIEnv *wnv, jobject object, jlong view, jlong platformInfo, jint width, jint height) {
+     id <JAWT_SurfaceLayers> surfaceLayers = (id)platformInfo;
+     CGRect frame = CGRectMake(0, surfaceLayers.windowLayer.frame.size.height-height, width, height);
+     [(NSOpenGLView *) view setFrame:frame];
+ }
