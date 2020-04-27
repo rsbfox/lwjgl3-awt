@@ -39,16 +39,6 @@ public abstract class AWTGLCanvas extends Canvas {
     private boolean resized = false;
     private Instant lastResized = null;
 
-    // todo: fix in better way
-    @Override
-    public int getHeight() {
-        if (Platform.get() == Platform.MACOSX) {
-            return -super.getHeight();
-        } else {
-            return super.getHeight();
-        }
-    }
-
     @Override
     public void removeNotify() {
         super.removeNotify();
@@ -77,8 +67,6 @@ public abstract class AWTGLCanvas extends Canvas {
 
     protected void beforeRender() {
         // TODO: figure out if NSOpenGLView can be resized
-        // causing visual bugs disabled for now
-        /*
         if (resized && lastResized.plusSeconds(1).isBefore(Instant.now())) {
             if (context != 0L) {
                 platformCanvas.deleteContext(context);
@@ -87,7 +75,6 @@ public abstract class AWTGLCanvas extends Canvas {
                 resized = false;
             }
         }
-        */
         if (context == 0L) {
             try {
                 context = platformCanvas.create(this, data, effective);
