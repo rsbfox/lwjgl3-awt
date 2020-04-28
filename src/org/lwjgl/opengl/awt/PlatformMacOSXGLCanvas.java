@@ -7,8 +7,7 @@ import org.lwjgl.system.macosx.ObjCRuntime;
 
 import java.awt.*;
 
-import static org.lwjgl.opengl.CGL.CGLGetCurrentContext;
-import static org.lwjgl.opengl.CGL.CGLSetCurrentContext;
+import static org.lwjgl.opengl.CGL.*;
 import static org.lwjgl.opengl.GL11.glFlush;
 import static org.lwjgl.system.JNI.invokePPP;
 import static org.lwjgl.system.jawt.JAWTFunctions.*;
@@ -30,8 +29,9 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
     }
 
     public JAWTDrawingSurface ds;
-    private long platformInfo;
-    private long view = 0L;
+    private long view;
+    private int width;
+    private int height;
 
     // core animation flush
     private static void caFlush() {
@@ -39,14 +39,6 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
     }
 
     private native long createView(long platformInfo, int width, int height);
-
-    private native void resizeView(long view, long platformInfo, int width, int height);
-
-    public void resizeView(int width, int height) {
-        if (view != 0L) {
-            resizeView(view, platformInfo, width, height);
-        }
-    }
 
     @Override
     public long create(Canvas canvas, GLData attribs, GLData effective) throws AWTException {
@@ -58,9 +50,8 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
                 throw new AWTException("JAWT_DrawingSurface_Lock() failed");
             try {
                 JAWTDrawingSurfaceInfo dsi = JAWT_DrawingSurface_GetDrawingSurfaceInfo(ds, ds.GetDrawingSurfaceInfo());
-                platformInfo = dsi.platformInfo();
                 try {
-                    view = createView(platformInfo, dsi.bounds().width(), dsi.bounds().height());
+                    view = createView(dsi.platformInfo(), dsi.bounds().width(), dsi.bounds().height());
                     long openGLContext = invokePPP(view, sel_getUid("openGLContext"), objc_msgSend);
                     return invokePPP(openGLContext, sel_getUid("CGLContextObj"), objc_msgSend);
                 } finally {
@@ -83,21 +74,28 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
 
     @Override
     public boolean deleteContext(long context) {
-        deleteView();
-        return false;
-    }
-
-    // frees created NSOpenGLView
-    private void deleteView() {
+        // frees created NSOpenGLView
         invokePPP(view, sel_getUid("removeFromSuperviewWithoutNeedingDisplay"), objc_msgSend);
         invokePPP(view, sel_getUid("clearGLContext"), objc_msgSend);
         invokePPP(view, sel_getUid("release"), objc_msgSend);
-        view = 0L;
+        return false;
     }
 
     @Override
     public boolean makeCurrent(long context) {
         CGLSetCurrentContext(context);
+        if (context != 0L) {
+            JAWTDrawingSurfaceInfo dsi = JAWT_DrawingSurface_GetDrawingSurfaceInfo(ds, ds.GetDrawingSurfaceInfo());
+            int width = dsi.bounds().width();
+            int height = dsi.bounds().height();
+            if (width != this.width || height != this.height) {
+                // [NSOpenGLCotext update] seems bugged. Updating renderer context with CGL works.
+                CGLSetParameter(context, kCGLCPSurfaceBackingSize, new int[]{width, height});
+                CGLEnable(context, kCGLCESurfaceBackingSize);
+                this.width = width;
+                this.height = height;
+            }
+        }
         return true;
     }
 

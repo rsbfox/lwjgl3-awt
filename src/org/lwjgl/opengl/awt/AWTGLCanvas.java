@@ -5,8 +5,6 @@ import org.lwjgl.awthacks.NonClearGraphics2D;
 import org.lwjgl.system.Platform;
 
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.time.Instant;
 import java.util.concurrent.Callable;
 
@@ -50,18 +48,6 @@ public abstract class AWTGLCanvas extends Canvas {
     }
     protected AWTGLCanvas(GLData data) {
         this.data = data;
-        if (platformCanvas instanceof PlatformMacOSXGLCanvas) {
-            addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    // view is resizing but it doesn't look correct :/
-                    ((PlatformMacOSXGLCanvas) platformCanvas).resizeView(getWidth(), getHeight());
-                    // recreating whole view works though
-                    // resized = true;
-                    // lastResized = Instant.now();
-                }
-            });
-        }
     }
 
     protected AWTGLCanvas() {
@@ -69,14 +55,6 @@ public abstract class AWTGLCanvas extends Canvas {
     }
 
     protected void beforeRender() {
-        if (resized && lastResized.plusSeconds(1).isBefore(Instant.now())) {
-            if (context != 0L) {
-                platformCanvas.deleteContext(context);
-                initCalled = false;
-                context = 0L;
-                resized = false;
-            }
-        }
         if (context == 0L) {
             try {
                 context = platformCanvas.create(this, data, effective);
