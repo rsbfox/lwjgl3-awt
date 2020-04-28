@@ -83,7 +83,7 @@ public class SimpleTexturedSphere {
         JFrame frame = new JFrame("AWT test");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        frame.setPreferredSize(new Dimension(100, 70));
+        frame.setPreferredSize(new Dimension(1024, 768));
         GLData data = new GLData();
         data.samples = 4;
         data.swapInterval = 0;
