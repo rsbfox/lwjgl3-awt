@@ -51,7 +51,9 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
             try {
                 JAWTDrawingSurfaceInfo dsi = JAWT_DrawingSurface_GetDrawingSurfaceInfo(ds, ds.GetDrawingSurfaceInfo());
                 try {
-                    view = createView(dsi.platformInfo(), dsi.bounds().width(), dsi.bounds().height());
+                    width = dsi.bounds().width();
+                    height = dsi.bounds().height();
+                    view = createView(dsi.platformInfo(), width, height);
                     long openGLContext = invokePPP(view, sel_getUid("openGLContext"), objc_msgSend);
                     return invokePPP(openGLContext, sel_getUid("CGLContextObj"), objc_msgSend);
                 } finally {
