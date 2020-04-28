@@ -300,6 +300,22 @@
 			<artifactId>lwjgl-vulkan</artifactId>
 			<version>${lwjgl.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.joml</groupId>
+			<artifactId>joml</artifactId>
+			<version>1.9.24</version>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-stb</artifactId>
+			<version>${lwjgl.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-stb</artifactId>
+			<classifier>natives-macos</classifier>
+			<version>${lwjgl.version}</version>
+		</dependency>
 	</dependencies>
 </project>
 
