@@ -54,6 +54,7 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
                     width = dsi.bounds().width();
                     height = dsi.bounds().height();
                     view = createView(dsi.platformInfo(), width, height);
+                    caFlush();
                     long openGLContext = invokePPP(view, sel_getUid("openGLContext"), objc_msgSend);
                     return invokePPP(openGLContext, sel_getUid("CGLContextObj"), objc_msgSend);
                 } finally {
@@ -70,7 +71,6 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
     @Override
     public boolean swapBuffers() {
         glFlush();
-        caFlush();
         return true;
     }
 

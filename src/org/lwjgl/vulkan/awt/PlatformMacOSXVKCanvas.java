@@ -55,6 +55,7 @@ public class PlatformMacOSXVKCanvas implements PlatformVKCanvas {
                 JAWTDrawingSurfaceInfo dsi = JAWT_DrawingSurface_GetDrawingSurfaceInfo(ds, ds.GetDrawingSurfaceInfo());
                 try {
                     long metalLayer = createMTKView(dsi.platformInfo(), dsi.bounds().width(), dsi.bounds().height());
+                    caFlush();
                     PointerBuffer pPlayer = PointerBuffer.create(metalLayer, 1);
                     VkMetalSurfaceCreateInfoEXT sci = VkMetalSurfaceCreateInfoEXT.callocStack(stack)
                             .sType(VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT)

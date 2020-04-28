@@ -1,11 +1,9 @@
 package org.lwjgl.vulkan.awt;
 
-import java.awt.AWTException;
-import java.awt.Canvas;
-import java.awt.Graphics;
-
 import org.lwjgl.system.Platform;
 import org.lwjgl.vulkan.VkPhysicalDevice;
+
+import java.awt.*;
 
 /**
  * An AWT {@link Canvas} that supports to be drawn on using Vulkan.
@@ -64,10 +62,6 @@ public abstract class AWTVKCanvas extends Canvas {
         if (created)
             initVK();
         paintVK();
-        // todo: investigate how to trigger display of metal backing layer from vulkan
-        if (platformCanvas instanceof PlatformMacOSXVKCanvas) {
-            PlatformMacOSXVKCanvas.caFlush();
-        }
     }
 
     /**
