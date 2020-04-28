@@ -88,14 +88,18 @@ public class PlatformMacOSXGLCanvas implements PlatformGLCanvas {
         CGLSetCurrentContext(context);
         if (context != 0L) {
             JAWTDrawingSurfaceInfo dsi = JAWT_DrawingSurface_GetDrawingSurfaceInfo(ds, ds.GetDrawingSurfaceInfo());
-            int width = dsi.bounds().width();
-            int height = dsi.bounds().height();
-            if (width != this.width || height != this.height) {
-                // [NSOpenGLCotext update] seems bugged. Updating renderer context with CGL works.
-                CGLSetParameter(context, kCGLCPSurfaceBackingSize, new int[]{width, height});
-                CGLEnable(context, kCGLCESurfaceBackingSize);
-                this.width = width;
-                this.height = height;
+            try {
+                int width = dsi.bounds().width();
+                int height = dsi.bounds().height();
+                if (width != this.width || height != this.height) {
+                    // [NSOpenGLCotext update] seems bugged. Updating renderer context with CGL works.
+                    CGLSetParameter(context, kCGLCPSurfaceBackingSize, new int[]{width, height});
+                    CGLEnable(context, kCGLCESurfaceBackingSize);
+                    this.width = width;
+                    this.height = height;
+                }
+            } finally {
+                JAWT_DrawingSurface_FreeDrawingSurfaceInfo(dsi, ds.FreeDrawingSurfaceInfo());
             }
         }
         return true;

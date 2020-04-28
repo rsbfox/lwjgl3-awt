@@ -5,7 +5,6 @@ import org.lwjgl.awthacks.NonClearGraphics2D;
 import org.lwjgl.system.Platform;
 
 import java.awt.*;
-import java.time.Instant;
 import java.util.concurrent.Callable;
 
 /**
@@ -34,8 +33,6 @@ public abstract class AWTGLCanvas extends Canvas {
     protected final GLData data;
     protected final GLData effective = new GLData();
     protected boolean initCalled;
-    private boolean resized = false;
-    private Instant lastResized = null;
 
     @Override
     public void removeNotify() {
